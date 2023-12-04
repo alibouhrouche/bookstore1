@@ -12,5 +12,5 @@ class Customer(Base):
     email = Column(String)
     phone = Column(String)
     address = Column(String)
-    status = Enum("active", "inactive", name="status")
+    status = Column(Enum("active", "inactive"))
     orders = Column(Integer)

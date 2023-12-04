@@ -37,3 +37,7 @@ class Item(ItemBase):
 
 
 ItemUpdate = Item.all_optional('ItemUpdate')
+
+class ItemCatch(BaseModel):
+    id: int
+    q: int

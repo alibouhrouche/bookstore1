@@ -1,9 +1,24 @@
-from typing import List
+from typing import Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, create_model
 
 
-class OrderBase(BaseModel):
+class MyBaseModel(BaseModel):
+    @classmethod
+    def all_optional(cls, name: str) -> type[Self]:
+        """
+        Creates a new model with the same fields, but all optional.
+
+        Usage: SomeOptionalModel = SomeModel.all_optional('SomeOptionalModel')
+        """
+        return create_model(
+            name,
+            __base__=cls,
+            **{name: (info.annotation, None) for name, info in cls.model_fields.items()}
+        )
+
+
+class OrderBase(MyBaseModel):
     title: str
     status: str
     owner_id: int
@@ -22,12 +37,12 @@ class OrderCreate(OrderBase):
 class Order(OrderBase):
     id: int
     order_items: list
-    
+
     class Config:
         from_attributes = True
 
 
-class OrderItemBase(BaseModel):
+class OrderItemBase(MyBaseModel):
     title: str
     description: str
     price: int
@@ -45,3 +60,6 @@ class OrderItem(OrderItemBase):
 
     class Config:
         from_attributes = True
+
+
+OrderUpdate = Order.all_optional('OrderUpdate')

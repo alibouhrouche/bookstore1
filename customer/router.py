@@ -38,6 +38,7 @@ def read_customer(customer_id: int, db: Session = Depends(get_db)):
     return {"customer": db_customer}
 
 
+@app.patch("/{customer_id}")
 @app.put("/{customer_id}")
 def update_customer(
     customer_id: int, customer: schemas.CustomerUpdate, db: Session = Depends(get_db)
@@ -45,13 +46,12 @@ def update_customer(
     db_customer = crud.get_customer(db=db, customer_id=customer_id)
     if db_customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
-    customer.id = db_customer.id
     customer.orders = db_customer.orders if customer.orders is None else customer.orders
     customer.name = db_customer.name if customer.name is None else customer.name
     customer.email = db_customer.email if customer.email is None else customer.email
     customer.phone = db_customer.phone if customer.phone is None else customer.phone
     customer.address = db_customer.address if customer.address is None else customer.address
-    db_customer = crud.update_customer(db=db, customer=customer)
+    db_customer = crud.update_customer(db=db, id=customer_id, customer=customer)
     return {"customer": db_customer}
 
 

@@ -19,8 +19,8 @@ def create_customer(db: Session, customer: schemas.CustomerCreate):
     return db_customer
 
 
-def update_customer(db: Session, customer: schemas.Customer):
-    db_customer = db.query(models.Customer).filter(models.Customer.id == customer.id).first()
+def update_customer(db: Session, id, customer: schemas.Customer):
+    db_customer = db.query(models.Customer).filter(models.Customer.id == id).first()
     db_customer.name = customer.name
     db_customer.email = customer.email
     db_customer.phone = customer.phone

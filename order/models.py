@@ -9,7 +9,7 @@ class Order(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
-    status = Enum("carted", "invoiced", "paid", "pending", "shipped", "cancelled", name="status")
+    status = Column(Enum("carted", "invoiced", "paid", "pending", "shipped", "cancelled"))
     owner_id = Column(Integer)
     order_items = relationship("OrderItem", back_populates="order")
 

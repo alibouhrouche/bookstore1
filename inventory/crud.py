@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from .schemas import ItemCatch
 
 
 def get_item(db: Session, item_id: int):
@@ -38,3 +39,21 @@ def delete_item(db: Session, item_id: int):
     db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
     db.delete(db_item)
     db.commit()
+
+
+def reserve_items(db: Session, items: list[ItemCatch]):
+    for x in items:
+        db_item = db.query(models.Item).filter(models.Item.id == x.id).first()
+        if db_item.stock < x.q:
+            raise Exception("Not enough items in stock")
+        db_item.stock -= x.q
+    db.commit()
+    return {"message": "Items captured"}
+
+
+def release_items(db: Session, items: list[ItemCatch]):
+    for x in items:
+        db_item = db.query(models.Item).filter(models.Item.id == x.id).first()
+        db_item.stock += x.q
+    db.commit()
+    return {"message": "Items released"}

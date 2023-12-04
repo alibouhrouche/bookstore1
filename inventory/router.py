@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
+from .schemas import ItemCatch
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -52,6 +53,7 @@ def read_item_stock(item_id: int, db: Session = Depends(get_db)):
     return {"stock": db_item.stock}
 
 
+@app.patch("/{item_id}")
 @app.put("/{item_id}")
 def update_item(item_id: int, item: schemas.ItemUpdate, db: Session = Depends(get_db)):
     db_item = crud.get_item(db=db, item_id=item_id)
@@ -81,3 +83,13 @@ def get_items(v: list[int], db: Session = Depends(get_db)):
     for i in v:
         ret[i] = crud.get_item(db=db, item_id=i)
     return {"items": ret}
+
+
+@app.post("/reserve")
+def reserve_items(v: list[ItemCatch], db: Session = Depends(get_db)):
+    return crud.reserve_items(db=db, items=v)
+
+
+@app.post("/release")
+def release_items(v: list[ItemCatch], db: Session = Depends(get_db)):
+    return crud.release_items(db=db, items=v)
