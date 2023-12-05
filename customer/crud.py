@@ -19,12 +19,13 @@ def create_customer(db: Session, customer: schemas.CustomerCreate):
     return db_customer
 
 
-def update_customer(db: Session, id, customer: schemas.Customer):
+def update_customer(db: Session, id: int, customer: schemas.Customer):
     db_customer = db.query(models.Customer).filter(models.Customer.id == id).first()
     db_customer.name = customer.name
     db_customer.email = customer.email
     db_customer.phone = customer.phone
     db_customer.address = customer.address
+    db_customer.orders = customer.orders
     db.commit()
     db.refresh(db_customer)
     return db_customer

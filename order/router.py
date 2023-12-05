@@ -50,5 +50,5 @@ def update_main(order_id: int, order: schemas.OrderUpdate, db: Session = Depends
     db_order = crud.get_order(db, order_id=order_id)
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
-    db_order = crud.update_order(db, order=order)
+    db_order = crud.update_order(db, id=order_id, order=order)
     return {"order": db_order}

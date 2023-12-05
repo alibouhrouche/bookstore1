@@ -70,5 +70,5 @@ def create_order(customer_id: int, db: Session = Depends(get_db)):
     if db_customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
     db_customer.orders = db_customer.orders + 1
-    db_customer = crud.update_customer(db=db, customer=db_customer)
+    db_customer = crud.update_customer(db=db, id=customer_id, customer=db_customer)
     return {"customer": db_customer}

@@ -71,14 +71,14 @@ def delete_order(db: Session, order_id: int):
     db.commit()
 
 
-def update_order(db: Session, order: schemas.OrderUpdate):
-    db_order = db.query(models.Order).filter(models.Order.id == order.id).first()
+def update_order(db: Session, id: int, order: schemas.OrderUpdate):
+    db_order = db.query(models.Order).options(selectinload(models.Order.order_items)).filter(models.Order.id == id).first()
     db_order.title = order.title
     if db_order.status != order.status:
         if db_order.status == "carted" and order.status != "cancelled":
-            requests.post("http://inventory/reserve", json=[{"id": x.item_id, "q": x.quantity} for x in order.items])
+            requests.post("http://inventory/reserve", json=[{"id": x.item_id, "q": x.quantity} for x in db_order.order_items])
         if db_order.status != "carted" and order.status == "cancelled":
-            requests.post("http://inventory/release", json=[{"id": x.item_id, "q": x.quantity} for x in order.items])
+            requests.post("http://inventory/release", json=[{"id": x.item_id, "q": x.quantity} for x in db_order.order_items])
     db_order.status = order.status
     db.commit()
     db.refresh(db_order)
